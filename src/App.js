@@ -10,7 +10,10 @@ import {
   MDBBtn,
   MDBBtnGroup
 } from "mdb-react-ui-kit";
+import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 
 function App() {
   const[data, setData] = useState([]);
@@ -30,7 +33,6 @@ function App() {
       .catch((err) => console.log(err));
   }
   console.log('data', data);
-
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -52,38 +54,57 @@ function App() {
   const handleSort = async (e) => {
     let value = e.target.value;
     setSortValue(value);
-    // if (value.equals('Fat')) { value = 'Fat, Total'; }
-    // if (value.equals('Serving Size')) { value = 'Serving Weight'; }
-    data.sort((a, b) => (a[value] > b[value]) ? 1 : -1)
-    console.log("Sorted value", value);
-    console.log("Sorted", data);
+    if (value === 'Species') {
+      data.sort((a, b) => (a['Species Name'] > b['Species Name']) ? 1 : -1);
+    } else if (value === 'Fat') { 
+      data.sort((a, b) => (parseInt(a['Fat, Total']) > parseInt(b['Fat, Total'])) ? 1 : -1);
+    } else if (value === 'Serving Size') {
+      data.sort((a, b) => (parseInt(a['Serving Weight']) > parseInt(b['Serving Weight'])) ? 1 : -1);
+    } else {
+      data.sort((a, b) => (parseInt(a[value]) > parseInt(b[value])) ? 1 : -1);
+    }
     setValue("");
   }
 
   return (
     <MDBContainer>
-      <h1>Fish Nutrition Search</h1>
-      <form style={{
-        margin: "auto",
-        padding: "15px",
-        maxWidth: "400px",
-        alignContent: "center"
-      }}
-      className="d-flex input-group w-auto"
-      onSubmit={handleSearch}
-      >
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Search Fish"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-        />
-        <MDBBtnGroup>
-          <MDBBtn type="submit" color="dark">Search</MDBBtn>
-        </MDBBtnGroup>
-      </form>
-      <div style={{marginTop: "100px"}}>
+      <h1 className="text-center" style={{marginTop: "50px"}}>Fish Nutrition Search</h1>
+      <div>
+        <form style={{
+          margin: "auto",
+          padding: "15px",
+          maxWidth: "400px",
+          alignContent: "center"
+        }}
+        className="d-flex input-group w-auto"
+        onSubmit={handleSearch}
+        >
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search Fish"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+          />
+          <MDBBtnGroup>
+            <MDBBtn type="submit" color="dark">
+              <FontAwesomeIcon icon={faMagnifyingGlass} />
+            </MDBBtn>
+          </MDBBtnGroup>
+        </form>
+        <h2>Filter by</h2>
+          <select 
+            style={{width: "50%", height: "35px"}}
+            onChange={handleSort}
+            value={sortValue}
+          >
+            <option>Select value</option>
+            {sortOptions.map((item, index) => (
+              <option value={item} key={index}>{item}</option>
+            ))}
+          </select>
+      </div>
+      <div style={{marginTop: "100px", marginBottom: "100px"}}>
         <h2 className="text-center">Results</h2>
         <MDBRow>
           <MDBCol size="12">
@@ -118,22 +139,6 @@ function App() {
           </MDBCol>
         </MDBRow>
       </div>
-      <MDBRow>
-        <MDBCol size="8">
-          <h2>Filter by</h2>
-          <select 
-            style={{width: "50%", height: "35px"}}
-            onChange={handleSort}
-            value={sortValue}
-          >
-            <option>Select value</option>
-            {sortOptions.map((item, index) => (
-              <option value={item} key={index}>{item}</option>
-            ))}
-          </select>
-        </MDBCol>
-        <MDBCol size="4"><h2>Filter</h2></MDBCol>
-      </MDBRow>
     </MDBContainer>
   );
 }
