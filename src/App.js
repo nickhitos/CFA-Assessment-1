@@ -43,6 +43,8 @@ function App() {
       });
   }
 
+  console.log('data', data) // REMOVE
+
   const handleSearch = async (e) => {
     setIsLoading(true);
     setHasError(false);
@@ -113,7 +115,7 @@ function App() {
             style={{ width: "20%", height: "35px"}}
             onChange={handleSort}
             value={sortValue}
-            class="form-select"
+            className="form-select"
           >
             <option>Select value</option>
             {sortOptions.map((item, index) => (
