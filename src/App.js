@@ -34,6 +34,12 @@ function App() {
     return await fetch("https://www.fishwatch.gov/api/species")
       .then(res => res.json())
       .then(data => {
+        data.forEach(fish => {
+          if (!fish['Calories'] || !fish['Fat, Total'] || !fish['Serving Weight']) {
+            let index = data.indexOf(fish);
+            data.splice(index, 1);
+          }
+        })
         setData(data)
         setIsLoading(false);
       })
@@ -42,8 +48,7 @@ function App() {
         setHasError(false);
       });
   }
-
-  console.log('data', data) // REMOVE
+  console.log('data', data)
 
   const handleSearch = async (e) => {
     setIsLoading(true);
@@ -54,7 +59,10 @@ function App() {
       .then(res => res.json())
       .then(data => {
         data.forEach(fish => {
-          if (fish['Species Name'].toLowerCase().includes(value.toLowerCase())) {
+          if (!fish['Calories'] || !fish['Fat, Total'] || !fish['Serving Weight']) {
+            let index = data.indexOf(fish);
+            data.splice(index, 1);
+          } else if (fish['Species Name'].toLowerCase().includes(value.toLowerCase())) {
             newData.push(fish);
           }
         })
@@ -74,7 +82,7 @@ function App() {
     if (value === 'Species') {
       data.sort((a, b) => (a['Species Name'] > b['Species Name']) ? 1 : -1);
     } else if (value === 'Fat') {
-      data.sort((a, b) => (parseInt(a['Fat, Total']) > parseInt(b['Fat, Total'])) ? 1 : -1);
+      data.sort((a, b) => (parseFloat(a['Fat, Total']) > parseFloat(b['Fat, Total'])) ? 1 : -1);
     } else if (value === 'Serving Size') {
       data.sort((a, b) => (parseInt(a['Serving Weight']) > parseInt(b['Serving Weight'])) ? 1 : -1);
     } else {
@@ -112,7 +120,7 @@ function App() {
         <div>
           <h2>Filter</h2>
           <select
-            style={{ width: "20%", height: "35px"}}
+            style={{ width: "20%", height: "35px" }}
             onChange={handleSort}
             value={sortValue}
             className="form-select"
